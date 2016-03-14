@@ -29,7 +29,9 @@ namespace NUC {
 
         }
 
-    
+        std::string about() const {
+            return "Total cut\n";
+        }
     };
 
 }

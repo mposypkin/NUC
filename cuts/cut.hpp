@@ -14,13 +14,14 @@
 #ifndef CUT_HPP
 #define CUT_HPP
 
+#include <string>
 #include <box/box.hpp>
 #include "cuttypes.hpp"
 
 namespace NUC {
 
     /**
-     * Generic bastract class for storing cuts
+     * Generic abstract class for storing cuts
      */
     template <class FT> class Cut {
     public:
@@ -33,6 +34,13 @@ namespace NUC {
             return mBox;
         }
 
+        /**
+         * Get description
+         * @return description
+         */
+        virtual std::string about () const {
+            return "Unnamed cut";
+        }
     protected:
 
         /**
