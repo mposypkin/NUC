@@ -9,6 +9,7 @@
 #define	LPZBNDSUPP_HPP
 
 #include <box/boxutils.hpp>
+#include <functor.hpp>
 #include "boundsupp.hpp"
 
 namespace NUC {
@@ -16,15 +17,21 @@ namespace NUC {
     /**
      * Lipschitzian lower bound supplier
      */
-    template <class FT> class LpzBoundSupplier {
+    template <class FT> class LpzBoundSupplier : public BoundSupplier <FT>{
     public:
 
         /**
          * Constructor
+         * @param n problem dimension
          * @param lpz Lipschitzian constant
+         * @param f Functor
          */
-        LpzBoundSupplier(FT lpz) : mLpz(lpz) {
-            
+        LpzBoundSupplier(int n, FT lpz, COMPI::Functor<FT>& f) : mN(n), mL(lpz), mF(f) {
+           mC = new FT[n] ;
+        }
+        
+        ~LpzBoundSupplier() {
+            delete[] mC;
         }
         
         /**
@@ -41,14 +48,18 @@ namespace NUC {
          * @return bound
          */
         FT getBound(const snowgoose::Box<FT>& box) {
-            FT r = snowgoose::BoxUtils::radius(box);
-            FT lb = v - r * mL;
-            
+            FT r = snowgoose::BoxUtils::radius(box);            
+            snowgoose::BoxUtils::getCenter(box, mC);
+            FT v = mF.func(mC);
+            FT lb = v - r * mL;            
+            return lb;
         }
 
     private:
         FT mL;
-
+        FT* mC;
+        int mN;
+        COMPI::Functor<FT>& mF;
     };
 
 
