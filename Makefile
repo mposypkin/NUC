@@ -1,7 +1,8 @@
 all dep clean indent tests::
 	cd cuts && $(MAKE) $@ && cd .. \\
 	cd cutfact && $(MAKE) $@ && cd .. \\
-	cd applycut && $(MAKE) $@ && cd ..
+	cd applycut && $(MAKE) $@ && cd .. \\
+	cd bags && $(MAKE) $@ && cd ..
 	
 doc: indent doxy
 

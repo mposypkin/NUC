@@ -14,10 +14,38 @@
 #ifndef SUB_HPP
 #define SUB_HPP
 
+#include <box/box.hpp>
+
 namespace NUC {
     
-    class Sub {
+    /**
+     * Class for subproblems
+     */
+    template <class FT> class Sub {        
+        public: 
+        /**
+         * Constructor 
+         * @param layer number of the subproblem's layer
+         * @param score the subproblem's score
+         * @param box the subproblem's box
+         */
+        Sub(long long int layer, FT score, snowgoose::Box<FT>& box) : mLayer(layer), mScore(score), mBox(box) {            
+        }
         
+        /**
+         * The subproblem's layer in the B&B tree
+         */
+        long long int mLayer;
+        
+        /**
+         * The subproblem's score - the lower the better
+         */
+        FT mScore;
+        
+        /**
+         * Subproblem's box
+         */
+        snowgoose::Box<FT> mBox;
     };
 }
 
