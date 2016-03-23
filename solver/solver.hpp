@@ -15,6 +15,8 @@
 #define SOLVER_HPP
 
 #include <bags/subbag.hpp>
+#include <decomp/decomp.hpp>
+
 namespace NUC {
 
     /**
@@ -23,12 +25,13 @@ namespace NUC {
     template <class FT> class Solver {
     public:
 
-       Solver (SubBag<FT>& bag) : mBag(bag) 
+       Solver (SubBag<FT>& bag, Decomp<FT>& decomp) : mBag(bag), mDecomp(decomp) 
        {           
        }
        
     private:
         SubBag<FT>& mBag;
+        Decomp<FT>& mDecomp;
     };
 
 }

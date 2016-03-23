@@ -14,6 +14,7 @@
 #ifndef DECOMP_HPP
 #define DECOMP_HPP
 
+#include <vector>
 #include <box/box.hpp>
 
 namespace NUC {
@@ -27,7 +28,7 @@ namespace NUC {
             /**
              * Modify (usually split) boxes in a list
              */
-            virtual void split(std::vector<snowgoose::Box<class FT>>& boxes) = 0;
+            virtual void split(std::vector< snowgoose::Box<FT> >& boxes) const = 0;
     };
 }
 
