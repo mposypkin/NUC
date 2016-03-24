@@ -14,6 +14,9 @@
 #ifndef BASESOLVER_HPP
 #define BASESOLVER_HPP
 
+#include <vector>
+#include <functional>
+
 #include <bags/subbag.hpp>
 #include <decomp/decomp.hpp>
 #include <cutfact/common/cutfactory.hpp>
@@ -26,17 +29,42 @@ namespace NUC {
     template <class FT> class BaseSolver {
     public:
 
-       BaseSolver (SubBag<FT>& bag, Decomp<FT>& decomp, CutFactory<FT>& cutfact) : 
-        mBag(bag), mDecomp(decomp), mCutFact(cutfact) 
-       {           
-       }
-       
-        
-        
+        /**
+         * Constructor
+         * @param bag bag of tasks
+         * @param decomp decomposer
+         * @param cutfact Cut generator's factory
+         */
+        BaseSolver(SubBag<FT>& bag, Decomp<FT>& decomp, CutFactory<FT>& cutfact) :
+        mBag(bag), mDecomp(decomp), mCutFact(cutfact) {
+        }
+
+        /**
+         * Solve the problem
+         */
+        void solve() {
+            while (mBag.size()) {
+                Sub<FT> sub = mBag.getSub();
+                eval(sub);
+                for (auto f : mStepWatchers)
+                    f(sub, *this);
+            }
+        }
+
+        void addStepWatcher(std::function <  void(const Sub<FT>& sub, const BaseSolver<FT>& solver) > f) {
+            mStepWatchers.push_back(f);
+        }
+
     private:
+
+        void eval(Sub<FT> sub) {
+            std::cout << "Sub is processing\n";
+        }
+
         SubBag<FT>& mBag;
         Decomp<FT>& mDecomp;
-        CutFactory<FT>& mCutFact;
+        CutFactory<FT>& mCutFact;   
+        std::vector < std::function < void(const Sub<FT>& sub, const BaseSolver<FT>& solver)> > mStepWatchers;
     };
 
 }
