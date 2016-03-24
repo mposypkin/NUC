@@ -3,7 +3,8 @@ all dep clean indent tests::
 	cd cutfact && $(MAKE) $@ && cd .. \\
 	cd applycut && $(MAKE) $@ && cd .. \\
 	cd bags && $(MAKE) $@ && cd .. \\
-	cd decomp && $(MAKE) $@ && cd .. 
+	cd decomp && $(MAKE) $@ && cd .. \\
+	cd solver && $(MAKE) $@ && cd .. 
 	
 doc: indent doxy
 

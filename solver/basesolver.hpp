@@ -11,30 +11,35 @@
  * Created on 21 марта 2016 г., 10:46
  */
 
-#ifndef SOLVER_HPP
-#define SOLVER_HPP
+#ifndef BASESOLVER_HPP
+#define BASESOLVER_HPP
 
 #include <bags/subbag.hpp>
 #include <decomp/decomp.hpp>
+#include <cutfact/common/cutfactory.hpp>
 
 namespace NUC {
 
     /**
-     * Non-uniform coverings solver
+     * Non-uniform coverings basice solver
      */
-    template <class FT> class Solver {
+    template <class FT> class BaseSolver {
     public:
 
-       Solver (SubBag<FT>& bag, Decomp<FT>& decomp) : mBag(bag), mDecomp(decomp) 
+       BaseSolver (SubBag<FT>& bag, Decomp<FT>& decomp, CutFactory<FT>& cutfact) : 
+        mBag(bag), mDecomp(decomp), mCutFact(cutfact) 
        {           
        }
        
+        
+        
     private:
         SubBag<FT>& mBag;
         Decomp<FT>& mDecomp;
+        CutFactory<FT>& mCutFact;
     };
 
 }
 
-#endif /* SOLVER_HPP */
+#endif /* BASESOLVER_HPP */
 

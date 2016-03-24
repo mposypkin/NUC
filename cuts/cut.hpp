@@ -41,6 +41,7 @@ namespace NUC {
         virtual std::string about () const {
             return "Unnamed cut";
         }
+        
     protected:
 
         /**
