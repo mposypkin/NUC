@@ -1,11 +1,12 @@
 #include <limits>
+#include <vector>
 #include <bags/bfsbag.hpp>
 #include <cutfact/lbcutfact/lpzbndsupp.hpp>
 #include <cutfact/lbcutfact/recordsupp.hpp>
 #include <cutfact/lbcutfact/lbcutfactory.hpp>
 #include <decomp/bisectdecomp.hpp>
 #include <oneobj/contboxconstr/dejong.hpp>
-#include <c++/4.9.2/bits/stl_vector.h>
+
 
 #include "basesolver.hpp"
 

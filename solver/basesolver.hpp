@@ -45,7 +45,6 @@ namespace NUC {
         void solve() {
             while (mBag.size()) {
                 Sub<FT> sub = mBag.getSub();
-                eval(sub);
                 for (auto f : mStepWatchers)
                     f(sub, *this);
             }
