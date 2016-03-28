@@ -20,6 +20,7 @@
 #include <bags/subbag.hpp>
 #include <decomp/decomp.hpp>
 #include <cutfact/common/cutfactory.hpp>
+#include <applycut/common/cutapplicator.hpp>
 
 namespace NUC {
 
@@ -35,8 +36,8 @@ namespace NUC {
          * @param decomp decomposer
          * @param cutfact Cut generator's factory
          */
-        BaseSolver(SubBag<FT>& bag, Decomp<FT>& decomp, CutFactory<FT>& cutfact) :
-        mBag(bag), mDecomp(decomp), mCutFact(cutfact) {
+        BaseSolver(SubBag<FT>& bag, Decomp<FT>& decomp, CutFactory<FT>& cutfact, CutApplicator<FT>& cutapp) :
+        mBag(bag), mDecomp(decomp), mCutFact(cutfact), mCutApp(cutapp) {
         }
 
         /**
@@ -45,25 +46,55 @@ namespace NUC {
         void solve() {
             while (mBag.size()) {
                 Sub<FT> sub = mBag.getSub();
-                for (auto f : mStepWatchers)
-                    f(sub, *this);
+                stepWatch(sub);
+                std::vector<std::shared_ptr <NUC::Cut <double> > > cv;
+                mCutFact.getCuts(sub.mBox, cv);
+                std::vector< snowgoose::Box<FT> > bv;
+                bv.push_back(sub.mBox);
+                mCutApp.applyCuts(cv, bv);
+                mDecomp.split(bv);
+                for (auto bx : bv) {
+                    Sub<FT> s(sub.mLayer + 1, sub.mScore, bx);
+                    eval(s);
+                    mBag.putSub(s);
+                }
             }
         }
 
-        void addStepWatcher(std::function <  void(const Sub<FT>& sub, const BaseSolver<FT>& solver) > f) {
+        /**
+         * Adds new step watcher
+         * @param f new step callback function
+         */
+        void addStepWatcher(std::function < void(const Sub<FT>& sub, const BaseSolver<FT>& solver) > f) {
             mStepWatchers.push_back(f);
+        }
+
+        /**
+         * Adds new subproblem evaluator
+         * @param f subproblem evaluator
+         */
+        void addSubEval(std::function < void(Sub<FT>& sub) > f) {
+            mSubEvals.push_back(f);
         }
 
     private:
 
-        void eval(Sub<FT> sub) {
-            std::cout << "Sub is processing\n";
+        void stepWatch(Sub<FT>& sub) {
+            for (auto f : mStepWatchers)
+                f(sub, *this);
+        }
+
+        void eval(Sub<FT>& sub) {
+            for (auto f : mSubEvals)
+                f(sub);
         }
 
         SubBag<FT>& mBag;
         Decomp<FT>& mDecomp;
-        CutFactory<FT>& mCutFact;   
+        CutFactory<FT>& mCutFact;
+        CutApplicator<FT>& mCutApp;
         std::vector < std::function < void(const Sub<FT>& sub, const BaseSolver<FT>& solver)> > mStepWatchers;
+        std::vector < std::function < void(Sub<FT>& sub)> > mSubEvals;
     };
 
 }

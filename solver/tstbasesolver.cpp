@@ -4,6 +4,7 @@
 #include <cutfact/lbcutfact/lpzbndsupp.hpp>
 #include <cutfact/lbcutfact/recordsupp.hpp>
 #include <cutfact/lbcutfact/lbcutfactory.hpp>
+#include <applycut/basic/serialcutapp.hpp>
 #include <decomp/bisectdecomp.hpp>
 #include <oneobj/contboxconstr/dejong.hpp>
 
@@ -12,17 +13,17 @@
 
 int main() {
     const int n = 2;
-    const double L = .001;
-    const double eps = 0.1;
+    const double L = 1;
+    const double eps = 0.001;
 
     // Setup problem
     OPTITEST::DejongProblemFactory fact(n, -2, 4);
     COMPI::MPProblem<double> *mpp = fact.getProblem();
 
     //Setup bag of sub problems
-    NUC::Sub<double> s(0, std::numeric_limits<double>::max(), *(mpp->mBox));
+    NUC::Sub<double> sub(0, std::numeric_limits<double>::max(), *(mpp->mBox));
     NUC::BFSBag<double> bag;
-    bag.putSub(s);
+    bag.putSub(sub);
 
     //Setup Cut Factory
     NUC::RecordSupplier<double> rs(std::numeric_limits<double>::max());
@@ -32,9 +33,10 @@ int main() {
 
     // Setup decomposer
     NUC::BisectDecomp<double> bisdec;
-
+    // Setup cut applicator 
+    NUC::SerialCutApplicator<double> cutapp;
     // Setup solver
-    NUC::BaseSolver<double> solver(bag, bisdec, cf);
+    NUC::BaseSolver<double> solver(bag, bisdec, cf, cutapp);
 
     //Setup step watchers
     auto tf = [](const NUC::Sub<double>& s, const NUC::BaseSolver<double>& slv) {
@@ -43,11 +45,23 @@ int main() {
         std::cout << "\n Layer = " << s.mLayer;
         std::cout << "\n Box = " << snowgoose::BoxUtils::toString(s.mBox) << "\n";
     };
-    
     solver.addStepWatcher(tf);
+    
+    double x[n];
+    //Setup sub evaluators
+    auto sf = [&](NUC::Sub<double>& s) {
+        snowgoose::BoxUtils::getCenter(s.mBox, x);
+        double v = pf->func(x);
+        rs.updateRv(v);
+        double r = snowgoose::BoxUtils::radius(s.mBox);
+        s.mScore = v - r * L;
+    };
+    solver.addSubEval(sf);
 
     // Run solver
     solver.solve();
+    
+    std::cout << "Best value found: " << rs.getBound(sub.mBox) << "\n";
 
 
     return 0;

@@ -23,12 +23,14 @@ namespace NUC {
             void applyCuts(const std::vector<std::shared_ptr <Cut <FT> > >& cutv, std::vector<snowgoose::Box<FT>>& boxv) {
                 for(auto icut : cutv) {
                     auto ibox = boxv.begin();
-                    for(;ibox != boxv.end(); ibox ++) {
+                    for(;ibox != boxv.end(); ) {
                         if(icut->getType() == CutTypes::Total) {
                             if(snowgoose::BoxUtils::isSubBox(icut->getBox(), *ibox)) {
                                 ibox = boxv.erase(ibox);
+                                continue;
                             }
                         }
+                        ibox ++;
                     }
                 }
             }
