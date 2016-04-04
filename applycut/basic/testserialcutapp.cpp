@@ -8,11 +8,11 @@ void initBox(double r, snowgoose::Box<double>& box) {
     const int n = box.mDim;
     for (int i = 0; i < n; i++) {
         box.mA[i] = -r;
-        box.mB[i] = r;       
+        box.mB[i] = r;
     }
 }
 
-int main() {
+void testTotalCutApplicator() {
     NUC::SerialCutApplicator<double> cutapp;
     std::vector<std::shared_ptr <NUC::Cut <double> > > cutv;
     const int n = 2;
@@ -27,13 +27,22 @@ int main() {
     std::shared_ptr< NUC::Cut<double> > pc(tc);
     cutv.push_back(pc);
     std::cout << "BEFORE:\n";
-    for(auto&& rf : boxv) {
+    for (auto&& rf : boxv) {
         std::cout << snowgoose::BoxUtils::toString(rf) << "\n";
     }
     cutapp.applyCuts(cutv, boxv);
     std::cout << "AFTER:\n";
-    for(auto&& rf : boxv) {
+    for (auto&& rf : boxv) {
         std::cout << snowgoose::BoxUtils::toString(rf) << "\n";
     }
     SG_ASSERT(boxv.size() == 1);
+}
+
+void testSaveBoxCutApplicator() {
+    
+}
+
+
+int main() {
+    testTotalCutApplicator();
 }

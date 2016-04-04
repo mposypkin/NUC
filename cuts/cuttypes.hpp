@@ -33,22 +33,22 @@ namespace NUC {
         /**
          * Cut out the internity of a ball
          */
-        InnerBall,
+        ExcludeBall,
         
         /**
          * Cut out the outer part of a ball (save the internity
          */
-        OuterBall,
+        SaveBall,
              
         /**
          * Cut the internity of a box
          */
-        InnerBox,
+        ExcludeBox,
         
         /**
          * Cut the outer part of box (save the internity)
          */
-        OuterBox
+        SaveBox
     };
 
 }

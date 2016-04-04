@@ -8,6 +8,7 @@
 #ifndef SERIALCUTAPP_HPP
 #define	SERIALCUTAPP_HPP
 
+#include <common/sgerrcheck.hpp>
 #include <box/boxutils.hpp>
 #include <cuts/cuttypes.hpp>
 #include <applycut/common/cutapplicator.hpp>
@@ -29,6 +30,8 @@ namespace NUC {
                                 ibox = boxv.erase(ibox);
                                 continue;
                             }
+                        } else {
+                            SG_ERROR_REPORT("Unknow cut type");
                         }
                         ibox ++;
                     }
