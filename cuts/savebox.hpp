@@ -39,8 +39,12 @@ namespace NUC {
          * Retrieve the list of boxes
          * @return list of boxes
          */
-        std::vector< snowgoose::Box<FT> >& getBoxes() {
+        const std::vector< snowgoose::Box<FT> >& getBoxes() const {
             return mBoxes;
+        }
+        
+        void pushBox(const snowgoose::Box<FT>& box) {
+            mBoxes.push_back(box);
         }
         
         private:
