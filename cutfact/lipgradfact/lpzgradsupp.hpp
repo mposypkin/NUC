@@ -16,12 +16,13 @@
 
 #include <box/box.hpp>
 
-/**
- * Supplies Lipzshitzian constants for gradient
- */
-template <class FT> class LpzGradSupp {
+namespace NUC {
 
-    public:   
+    /**
+     * Supplies Lipzshitzian constants for gradient
+     */
+    template <class FT> class LpzGradSupp {
+    public:
         /**
          * Retrieve Lipschitzian constants for gradient components
          * @param box the source box
@@ -29,7 +30,9 @@ template <class FT> class LpzGradSupp {
          */
         virtual void getLpzConst(const snowgoose::Box<FT>& box, FT* lpzv) = 0;
 
-};
+    };
+
+}
 
 #endif /* LPZGRADSUPP_HPP */
 
