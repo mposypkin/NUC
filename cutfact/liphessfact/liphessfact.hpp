@@ -1,18 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /* 
- * File:   lipgradfact.hpp
- * Author: Mikhail Posypkin <mposypkin at gmail.com>
+ * File:   liphessfact.hpp
+ * Author: medved
  *
- * Created on 7 апреля 2016 г., 16:52
+ * Created on April 10, 2016, 4:45 PM
  */
 
-#ifndef LIPGRADFACT_HPP
-#define LIPGRADFACT_HPP
+#ifndef LIPHESSFACT_HPP
+#define	LIPHESSFACT_HPP
 
 #include <functor.hpp>
 #include <box/box.hpp>
@@ -22,14 +16,14 @@
 #include <cuts/totalcut.hpp>
 #include <cuts/savebox.hpp>
 #include <cuts/excludeballcut.hpp>
-#include "lpzgradsupp.hpp"
+#include "lpzhesssupp.hpp"
 
 namespace NUC {
 
     /**
-     * Cut factory based on Lipschitzian gradients
+     * Cut factory based on Lipschitzian hessian
      */
-    template <class FT> class LipGradCutFactory : public CutFactory <FT> {
+    template <class FT> class LipHessCutFactory : public CutFactory <FT> {
     public:
 
         /**
@@ -39,11 +33,12 @@ namespace NUC {
          * @param box problem bounding box
          * @param delta tolerance to distinguish grad from 0
          */
-        LipGradCutFactory(COMPI::Functor<FT>& f, const snowgoose::Box<FT>& box, LpzGradSupp<FT>& supp, FT delta = 1e-8) : mF(f), mBox(box), mGradSupp(supp), mDelta(delta) {
+        LipHessCutFactory(COMPI::Functor<FT>& f, const snowgoose::Box<FT>& box, LpzHessSupp<FT>& supp, FT delta = 1e-8) : mF(f), mBox(box), mHessSupp(supp), mDelta(delta) {
             const int n = box.mDim;
+            const int nn = n * n;
             mX.alloc(n);
-            mG.alloc(n);
-            mLG.alloc(n);
+            mH.alloc(nn);
+            mLH.alloc(nn);
         }
 
         void getCuts(const snowgoose::Box<FT>& box, std::vector<std::shared_ptr <Cut <FT> > >& v) const {
@@ -51,30 +46,27 @@ namespace NUC {
             snowgoose::Box<FT> nbox(n);
             snowgoose::BoxUtils::copy(box, nbox);
             FT r;
-            auto comp = [&]  () {
+            auto comp = [&] () {
                 snowgoose::BoxUtils::getCenter(nbox, (FT*) mX);
                 r = snowgoose::BoxUtils::radius(nbox);
-                mF.grad(mX, mG);
-                mGradSupp.getLpzConst(box, mLG);
+                mF.hess(mX, mH);
+                mHessSupp.getLpzConst(box, mLH);
             };
             comp();
             bool totcut = false;
             bool savecut = false;
             for (int i = 0; i < n; i++) {
-                FT lb = mG[i] - r * mLG[i];
-                FT ub = mG[i] + r * mLG[i];
-                if (lb > mDelta) {
-                    if (mBox.mA[i] == nbox.mA[i]) {
-                        nbox.mB[i] = nbox.mA[i];
-                        savecut = true;
-                    } else
-                        totcut = true;
-                } else if (ub < -mDelta) {
+                int ii = i + i * n;
+                FT lb = mH[ii] - r * mLH[ii];
+                FT ub = mH[ii] + r * mLH[ii];
+                if (ub < -mDelta) {
+                    /*
                     if (mBox.mB[i] == nbox.mB[i]) {
                         nbox.mA[i] = nbox.mB[i];
                         savecut = true;
                     } else
-                        totcut = true;
+                     */
+                    totcut = true;
                 } else {
 
                 }
@@ -87,28 +79,32 @@ namespace NUC {
                     comp();
                 }
             }
+            
             if (savecut) {
                 auto savebox = new NUC::SaveBoxCut<double>(box);
                 savebox->pushBox(nbox);
                 std::shared_ptr< NUC::Cut<FT> > pc(savebox);
                 v.push_back(pc);
-            } 
+            }
+            
+            /*
             r = 0;
-            for(int i = 0; i < n; i ++) {
+            for (int i = 0; i < n; i++) {
                 FT nr = 0;
-                if(mLG[i] == 0)
+                if (mLH[i] == 0)
                     continue;
-                if(mG[i] >= mDelta) {
-                    nr = (mG[i] - mDelta) / mLG[i];
-                } else if(mG[i] <= - mDelta){
-                    nr = - (mG[i] + mDelta) / mLG[i];
+                if (mH[i] >= mDelta) {
+                    nr = (mH[i] - mDelta) / mLH[i];
+                } else if (mH[i] <= -mDelta) {
+                    nr = -(mH[i] + mDelta) / mLH[i];
                 }
-                if(nr > r)
+                if (nr > r)
                     r = nr;
             }
             std::cout << "r = " << r << "\n";
+             */ 
 #if 0            
-            if(r > 0) {
+            if (r > 0) {
                 auto exballcut = new NUC::ExcludeBallCut<FT>(nbox, r, mX);
                 std::shared_ptr< NUC::Cut<FT> > pc(exballcut);
                 v.push_back(pc);
@@ -118,13 +114,14 @@ namespace NUC {
 
         COMPI::Functor<FT>& mF;
         const snowgoose::Box<FT>& mBox;
-        LpzGradSupp<FT>& mGradSupp;
+        LpzHessSupp<FT>& mHessSupp;
         snowgoose::SmartArrayPtr<FT> mX;
-        snowgoose::SmartArrayPtr<FT> mG;
-        snowgoose::SmartArrayPtr<FT> mLG;
+        snowgoose::SmartArrayPtr<FT> mH;
+        snowgoose::SmartArrayPtr<FT> mLH;
         FT mDelta;
     };
 }
 
-#endif /* LIPGRADFACT_HPP */
+
+#endif	/* LIPHESSFACT_HPP */
 

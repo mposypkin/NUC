@@ -1,13 +1,16 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/* 
+ * File:   tstcompcutfact.cpp
+ * Author: medved
+ *
+ * Created on April 9, 2016, 10:41 AM
  */
 
+#include <cutfact/lbcutfact/lbcutfactory.hpp>
+#include <cutfact/lipgradfact/lipgradfact.hpp>
 #include <oneobj/contboxconstr/alufpent.hpp>
 #include <common/interval.hpp>
-#include "lpzgradsupp.hpp"
-#include "lipgradfact.hpp"
+
+#include "compcutfact.hpp"
 
 class APSupp : public NUC::LpzGradSupp <double> {
 public:
@@ -52,7 +55,10 @@ int main() {
     initcbox(cbox);
     NUC::LipGradCutFactory<double> lfact(obj, box, gsupp);
     std::vector<std::shared_ptr <NUC::Cut <double> > > cv;
-    lfact.getCuts(cbox, cv);
+    NUC::CompositeCutFactory<double> compf;
+    compf.addFactory(&lfact);
+    compf.addFactory(&lfact);
+    compf.getCuts(cbox, cv);
     for(auto o : cv) {
         std::cout << "Cut of type: " << o.get()->about() << "\n";
     }
