@@ -106,7 +106,7 @@ namespace NUC {
                 if(nr > r)
                     r = nr;
             }
-            std::cout << "r = " << r << "\n";
+           // std::cout << "r = " << r << "\n";
 #if 0            
             if(r > 0) {
                 auto exballcut = new NUC::ExcludeBallCut<FT>(nbox, r, mX);

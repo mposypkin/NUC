@@ -46,13 +46,13 @@ namespace NUC {
         void solve() {
             while (mBag.size()) {
                 Sub<FT> sub = mBag.getSub();
-                stepWatch(sub);
                 std::vector<std::shared_ptr <NUC::Cut <double> > > cv;
                 mCutFact.getCuts(sub.mBox, cv);
                 std::vector< snowgoose::Box<FT> > bv;
                 bv.push_back(sub.mBox);
                 mCutApp.applyCuts(cv, bv);
                 mDecomp.split(bv);
+                stepWatch(sub, cv, bv);
                 for (auto bx : bv) {
                     Sub<FT> s(sub.mLayer + 1, sub.mScore, bx);
                     eval(s);
@@ -65,7 +65,11 @@ namespace NUC {
          * Adds new step watcher
          * @param f new step callback function
          */
-        void addStepWatcher(std::function < void(const Sub<FT>& sub, const BaseSolver<FT>& solver) > f) {
+        void addStepWatcher(
+        std::function < void(const Sub<FT>& , 
+                const std::vector<std::shared_ptr <NUC::Cut <double> > >& ,
+                const std::vector< snowgoose::Box<FT> >& ,
+                const BaseSolver<FT>& )>  f) {
             mStepWatchers.push_back(f);
         }
 
@@ -79,9 +83,11 @@ namespace NUC {
 
     private:
 
-        void stepWatch(Sub<FT>& sub) {
+        void stepWatch(const Sub<FT>& sub, 
+                const std::vector<std::shared_ptr <NUC::Cut <double> > >& cutv,
+                const std::vector< snowgoose::Box<FT> >& boxv) {
             for (auto f : mStepWatchers)
-                f(sub, *this);
+                f(sub, cutv, boxv, *this);
         }
 
         void eval(Sub<FT>& sub) {
@@ -93,7 +99,10 @@ namespace NUC {
         Decomp<FT>& mDecomp;
         CutFactory<FT>& mCutFact;
         CutApplicator<FT>& mCutApp;
-        std::vector < std::function < void(const Sub<FT>& sub, const BaseSolver<FT>& solver)> > mStepWatchers;
+        std::vector < std::function < void(const Sub<FT>& , 
+                const std::vector<std::shared_ptr <NUC::Cut <double> > >& ,
+                const std::vector< snowgoose::Box<FT> >&,
+                const BaseSolver<FT>&)> > mStepWatchers;
         std::vector < std::function < void(Sub<FT>& sub)> > mSubEvals;
     };
 

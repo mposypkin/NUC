@@ -39,14 +39,17 @@ int main() {
     NUC::BaseSolver<double> solver(bag, bisdec, cf, cutapp);
 
     //Setup step watchers
-    auto tf = [](const NUC::Sub<double>& s, const NUC::BaseSolver<double>& slv) {
+    auto tf = [](const NUC::Sub<double>& s,
+            const std::vector<std::shared_ptr <NUC::Cut <double> > >&,
+            const std::vector< snowgoose::Box<double> >&,
+            const NUC::BaseSolver<double>& slv) {
         std::cout << "Sub: \n";
         std::cout << "Score = " << s.mScore;
         std::cout << "\n Layer = " << s.mLayer;
         std::cout << "\n Box = " << snowgoose::BoxUtils::toString(s.mBox) << "\n";
     };
     solver.addStepWatcher(tf);
-    
+
     double x[n];
     //Setup sub evaluators
     auto sf = [&](NUC::Sub<double>& s) {
@@ -60,7 +63,7 @@ int main() {
 
     // Run solver
     solver.solve();
-    
+
     std::cout << "Best value found: " << rs.getBound(sub.mBox) << "\n";
 
 

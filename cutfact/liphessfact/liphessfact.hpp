@@ -6,7 +6,7 @@
  */
 
 #ifndef LIPHESSFACT_HPP
-#define	LIPHESSFACT_HPP
+#define LIPHESSFACT_HPP
 
 #include <functor.hpp>
 #include <box/box.hpp>
@@ -53,40 +53,53 @@ namespace NUC {
                 mHessSupp.getLpzConst(box, mLH);
             };
             comp();
-            bool totcut = false;
+            std::vector< snowgoose::Box<FT> > boxv;
+            boxv.push_back(nbox);
             bool savecut = false;
             for (int i = 0; i < n; i++) {
                 int ii = i + i * n;
                 FT lb = mH[ii] - r * mLH[ii];
                 FT ub = mH[ii] + r * mLH[ii];
                 if (ub < -mDelta) {
-                    /*
-                    if (mBox.mB[i] == nbox.mB[i]) {
-                        nbox.mA[i] = nbox.mB[i];
-                        savecut = true;
-                    } else
-                     */
-                    totcut = true;
+                    savecut = true;
+                    std::vector< snowgoose::Box<FT> > nbx;
+                    while (!boxv.empty()) {
+                        snowgoose::Box<FT> bx = boxv.back();
+                        boxv.pop_back();
+                        if (bx.mA[i] == mBox.mA[i]) {
+                            snowgoose::Box<FT> bxa(n);
+                            snowgoose::BoxUtils::copy(bx, bxa);
+                            bxa.mB[i] = bxa.mA[i];
+                            nbx.push_back(bxa);
+                        } 
+                        if (bx.mB[i] == mBox.mB[i]) {
+                            snowgoose::Box<FT> bxb(n);
+                            snowgoose::BoxUtils::copy(bx, bxb);
+                            bxb.mA[i] = bxb.mB[i];
+                            nbx.push_back(bxb);
+                        }
+                    }
+                    boxv = nbx;
                 } else {
 
                 }
-                if (totcut) {
+                if (boxv.empty()) {
                     auto tc = new TotalCut <FT> (box);
                     std::shared_ptr< Cut<FT> > pc(tc);
                     v.push_back(pc);
                     break;
-                } else if (savecut) {
-                    comp();
                 }
             }
-            
+
             if (savecut) {
                 auto savebox = new NUC::SaveBoxCut<double>(box);
-                savebox->pushBox(nbox);
+                for (auto b : boxv) {
+                    savebox->pushBox(b);
+                }
                 std::shared_ptr< NUC::Cut<FT> > pc(savebox);
                 v.push_back(pc);
             }
-            
+
             /*
             r = 0;
             for (int i = 0; i < n; i++) {
@@ -102,7 +115,7 @@ namespace NUC {
                     r = nr;
             }
             std::cout << "r = " << r << "\n";
-             */ 
+             */
 #if 0            
             if (r > 0) {
                 auto exballcut = new NUC::ExcludeBallCut<FT>(nbox, r, mX);
@@ -123,5 +136,5 @@ namespace NUC {
 }
 
 
-#endif	/* LIPHESSFACT_HPP */
+#endif /* LIPHESSFACT_HPP */
 
