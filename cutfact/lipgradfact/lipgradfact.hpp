@@ -32,6 +32,10 @@ namespace NUC {
     template <class FT> class LipGradCutFactory : public CutFactory <FT> {
     public:
 
+        struct Options {
+            static const unsigned int EXTRACT_BOX = 1;
+        };
+        
         /**
          * Constructor 
          * @param supp the reference to the supplier
@@ -39,11 +43,12 @@ namespace NUC {
          * @param box problem bounding box
          * @param delta tolerance to distinguish grad from 0
          */
-        LipGradCutFactory(COMPI::Functor<FT>& f, const snowgoose::Box<FT>& box, LpzGradSupp<FT>& supp, FT delta = 1e-8) : mF(f), mBox(box), mGradSupp(supp), mDelta(delta) {
+        LipGradCutFactory(COMPI::Functor<FT>& f, const snowgoose::Box<FT>& box, LpzGradSupp<FT>& supp, FT delta = 1e-8) : 
+        mF(f), mBox(box), mGradSupp(supp), mDelta(delta), mOptions(Options::EXTRACT_BOX) {
             const int n = box.mDim;
             mX.alloc(n);
             mG.alloc(n);
-            mLG.alloc(n);
+            mLG.alloc(n);            
         }
 
         void getCuts(const snowgoose::Box<FT>& box, std::vector<std::shared_ptr <Cut <FT> > >& v) const {
@@ -51,7 +56,7 @@ namespace NUC {
             snowgoose::Box<FT> nbox(n);
             snowgoose::BoxUtils::copy(box, nbox);
             FT r;
-            auto comp = [&]  () {
+            auto comp = [&] () {
                 snowgoose::BoxUtils::getCenter(nbox, (FT*) mX);
                 r = snowgoose::BoxUtils::radius(nbox);
                 mF.grad(mX, mG);
@@ -63,21 +68,20 @@ namespace NUC {
             for (int i = 0; i < n; i++) {
                 FT lb = mG[i] - r * mLG[i];
                 FT ub = mG[i] + r * mLG[i];
-                if (lb > mDelta) {
+                if (lb >= mDelta) {
                     if (mBox.mA[i] == nbox.mA[i]) {
                         nbox.mB[i] = nbox.mA[i];
                         savecut = true;
                     } else
                         totcut = true;
-                } else if (ub < -mDelta) {
+                } else if (ub <= -mDelta) {
                     if (mBox.mB[i] == nbox.mB[i]) {
                         nbox.mA[i] = nbox.mB[i];
                         savecut = true;
                     } else
                         totcut = true;
-                } else {
-
                 }
+
                 if (totcut) {
                     auto tc = new TotalCut <FT> (box);
                     std::shared_ptr< Cut<FT> > pc(tc);
@@ -92,30 +96,36 @@ namespace NUC {
                 savebox->pushBox(nbox);
                 std::shared_ptr< NUC::Cut<FT> > pc(savebox);
                 v.push_back(pc);
-            } 
-            r = 0;
-            for(int i = 0; i < n; i ++) {
-                FT nr = 0;
-                if(mLG[i] == 0)
-                    continue;
-                if(mG[i] >= mDelta) {
-                    nr = (mG[i] - mDelta) / mLG[i];
-                } else if(mG[i] <= - mDelta){
-                    nr = - (mG[i] + mDelta) / mLG[i];
+            } else if(mOptions & Options::EXTRACT_BOX){
+                r = 0;
+                for (int i = 0; i < n; i++) {
+                    FT nr = 0;
+                    if (mLG[i] == 0)
+                        continue;
+                    if (mG[i] >= mDelta) {
+                        nr = (mG[i] - mDelta) / mLG[i];
+                    } else if (mG[i] <= -mDelta) {
+                        nr = -(mG[i] + mDelta) / mLG[i];
+                    }
+                    if (nr > r)
+                        r = nr;
                 }
-                if(nr > r)
-                    r = nr;
+                // std::cout << "r = " << r << "\n";
+
+                if (r > 0) {
+                    auto exballcut = new NUC::ExcludeBallCut<FT>(nbox, r, mX);
+                    std::shared_ptr< NUC::Cut<FT> > pc(exballcut);
+                    v.push_back(pc);
+                }
             }
-           // std::cout << "r = " << r << "\n";
-#if 0            
-            if(r > 0) {
-                auto exballcut = new NUC::ExcludeBallCut<FT>(nbox, r, mX);
-                std::shared_ptr< NUC::Cut<FT> > pc(exballcut);
-                v.push_back(pc);
-            }
-#endif            
+            
         }
 
+        Options& getOptions() {
+            return mOptions;
+        }
+        
+        unsigned int mOptions;
         COMPI::Functor<FT>& mF;
         const snowgoose::Box<FT>& mBox;
         LpzGradSupp<FT>& mGradSupp;
