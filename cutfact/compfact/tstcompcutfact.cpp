@@ -60,7 +60,7 @@ int main() {
     compf.addFactory(&lfact);
     compf.getCuts(cbox, cv);
     for(auto o : cv) {
-        std::cout << "Cut of type: " << o.get()->about() << "\n";
+        std::cout << "Cut of type: " << o.get()->toString() << "\n";
     }
     return 0;
 }

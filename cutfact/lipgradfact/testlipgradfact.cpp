@@ -54,7 +54,7 @@ int main() {
     std::vector<std::shared_ptr <NUC::Cut <double> > > cv;
     lfact.getCuts(cbox, cv);
     for(auto o : cv) {
-        std::cout << "Cut of type: " << o.get()->about() << "\n";
+        std::cout << "Cut of type: " << o.get()->toString() << "\n";
     }
     return 0;
 }

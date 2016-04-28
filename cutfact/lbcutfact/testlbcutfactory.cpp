@@ -20,7 +20,7 @@ int main() {
     const snowgoose::Box<double>& bx = *(mpp->mBox);
     cf.getCuts(bx, cv);
     for(auto o : cv) {
-        std::cout << "Cut of type: " << o.get()->about() << "\n";
+        std::cout << "Cut of type: " << o.get()->toString() << "\n";
     }
     return 0;
 }

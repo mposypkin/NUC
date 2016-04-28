@@ -29,8 +29,8 @@ namespace NUC {
 
         }
 
-        std::string about() const {
-            return "Total cut\n";
+        std::string toString() const {
+            return "Total cut";
         }
     };
 

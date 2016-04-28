@@ -38,7 +38,7 @@ namespace NUC {
          * Get description
          * @return description
          */
-        virtual std::string about () const {
+        virtual std::string toString () const {
             return "Unnamed cut";
         }
         
@@ -61,7 +61,7 @@ namespace NUC {
         /**
          * A box where the cut is valid
          */
-        const snowgoose::Box<FT>& mBox;
+        const snowgoose::Box<FT> mBox;
 
     };
 

@@ -15,6 +15,8 @@
 #define SAVEBOXCUT_HPP
 
 #include <vector>
+#include <sstream>
+#include <box/boxutils.hpp>
 
 #include "cut.hpp"
 
@@ -31,8 +33,13 @@ namespace NUC {
 
         }
 
-        std::string about() const {
-            return "Save box cut\n";
+        std::string toString() const {
+            std::ostringstream os;
+            os << "Save box cut with boxes ";
+            for(auto box : mBoxes) {
+                os << snowgoose::BoxUtils::toString(box);
+            }
+            return os.str();
         }
         
         /**

@@ -33,9 +33,9 @@ namespace NUC {
     public:
 
         struct Options {
-            static const unsigned int EXTRACT_BOX = 1;
+            static const unsigned int EXTRACT_BALL = 1;
         };
-        
+
         /**
          * Constructor 
          * @param supp the reference to the supplier
@@ -43,12 +43,12 @@ namespace NUC {
          * @param box problem bounding box
          * @param delta tolerance to distinguish grad from 0
          */
-        LipGradCutFactory(COMPI::Functor<FT>& f, const snowgoose::Box<FT>& box, LpzGradSupp<FT>& supp, FT delta = 1e-8) : 
-        mF(f), mBox(box), mGradSupp(supp), mDelta(delta), mOptions(Options::EXTRACT_BOX) {
+        LipGradCutFactory(COMPI::Functor<FT>& f, const snowgoose::Box<FT>& box, LpzGradSupp<FT>& supp, FT delta = 1e-8) :
+        mF(f), mBox(box), mGradSupp(supp), mDelta(delta), mOptions(Options::EXTRACT_BALL) {
             const int n = box.mDim;
             mX.alloc(n);
             mG.alloc(n);
-            mLG.alloc(n);            
+            mLG.alloc(n);
         }
 
         void getCuts(const snowgoose::Box<FT>& box, std::vector<std::shared_ptr <Cut <FT> > >& v) const {
@@ -96,7 +96,7 @@ namespace NUC {
                 savebox->pushBox(nbox);
                 std::shared_ptr< NUC::Cut<FT> > pc(savebox);
                 v.push_back(pc);
-            } else if(mOptions & Options::EXTRACT_BOX){
+            } else if (mOptions & Options::EXTRACT_BALL) {
                 r = 0;
                 for (int i = 0; i < n; i++) {
                     FT nr = 0;
@@ -118,13 +118,15 @@ namespace NUC {
                     v.push_back(pc);
                 }
             }
-            
+
         }
 
-        Options& getOptions() {
+        unsigned int& getOptions() {
             return mOptions;
         }
-        
+
+    private:
+
         unsigned int mOptions;
         COMPI::Functor<FT>& mF;
         const snowgoose::Box<FT>& mBox;

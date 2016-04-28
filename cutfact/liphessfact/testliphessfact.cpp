@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
     std::vector<std::shared_ptr <NUC::Cut <double> > > cv;
     hfact.getCuts(cbox, cv);
     for(auto o : cv) {
-        std::cout << "Cut of type: " << o.get()->about() << "\n";
+        std::cout << "Cut of type: " << o.get()->toString() << "\n";
     }
     return 0;
 }
