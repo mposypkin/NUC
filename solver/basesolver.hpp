@@ -37,14 +37,14 @@ namespace NUC {
          * @param cutfact Cut generator's factory
          */
         BaseSolver(SubBag<FT>& bag, Decomp<FT>& decomp, CutFactory<FT>& cutfact, CutApplicator<FT>& cutapp) :
-        mBag(bag), mDecomp(decomp), mCutFact(cutfact), mCutApp(cutapp) {
+        mBag(bag), mDecomp(decomp), mCutFact(cutfact), mCutApp(cutapp), mStopper(dummyStopper) {
         }
 
         /**
          * Solve the problem
          */
         void solve() {
-            while (mBag.size()) {
+            while (mBag.size() && !mStopper(*this)) {
                 Sub<FT> sub = mBag.getSub();
                 std::vector<std::shared_ptr <NUC::Cut <double> > > cv;
                 mCutFact.getCuts(sub.mBox, cv);
@@ -81,6 +81,22 @@ namespace NUC {
             mSubEvals.push_back(f);
         }
 
+        /**
+         * Sets stopper (stopper returns 'true' if the process should be terminated
+         * @param stopper
+         */
+        void setStopper(std::function< bool (const BaseSolver<FT>&)> stopper) {
+            mStopper = stopper;
+        }
+        
+        /**
+         * Get the bag of subproblems
+         * @return the bag of subproblems
+         */
+        SubBag<FT>& getBag() {
+            return mBag;
+        }
+        
     private:
 
         void stepWatch(const Sub<FT>& sub, 
@@ -94,6 +110,10 @@ namespace NUC {
             for (auto f : mSubEvals)
                 f(sub);
         }
+        
+        static bool dummyStopper(const BaseSolver<FT>& solver) {
+            return false;
+        }
 
         SubBag<FT>& mBag;
         Decomp<FT>& mDecomp;
@@ -103,6 +123,7 @@ namespace NUC {
                 const std::vector<std::shared_ptr <NUC::Cut <double> > >& ,
                 const std::vector< snowgoose::Box<FT> >&,
                 const BaseSolver<FT>&)> > mStepWatchers;
+        std::function< bool (const BaseSolver<FT>&)> mStopper;
         std::vector < std::function < void(Sub<FT>& sub)> > mSubEvals;
     };
 

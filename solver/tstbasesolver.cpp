@@ -11,6 +11,16 @@
 
 #include "basesolver.hpp"
 
+bool stopper(const NUC::BaseSolver<double>& solver) {
+    static int cnt = 0;
+    const int maxCnt = 5;
+    if(cnt ++ > maxCnt) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 int main() {
     const int n = 2;
     const double L = 1;
@@ -37,7 +47,9 @@ int main() {
     NUC::SerialCutApplicator<double> cutapp;
     // Setup solver
     NUC::BaseSolver<double> solver(bag, bisdec, cf, cutapp);
-
+    
+    // Set stopper for solver
+    solver.setStopper(stopper);
     //Setup step watchers
     auto tf = [](const NUC::Sub<double>& s,
             const std::vector<std::shared_ptr <NUC::Cut <double> > >&,
