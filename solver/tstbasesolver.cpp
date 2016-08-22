@@ -14,7 +14,7 @@
 bool stopper(const NUC::BaseSolver<double>& solver) {
     static int cnt = 0;
     const int maxCnt = 5;
-    if(cnt ++ > maxCnt) {
+    if (cnt++ > maxCnt) {
         return true;
     } else {
         return false;
@@ -47,7 +47,7 @@ int main() {
     NUC::SerialCutApplicator<double> cutapp;
     // Setup solver
     NUC::BaseSolver<double> solver(bag, bisdec, cf, cutapp);
-    
+
     // Set stopper for solver
     solver.setStopper(stopper);
     //Setup step watchers
@@ -78,7 +78,15 @@ int main() {
 
     std::cout << "Best value found: " << rs.getBound(sub.mBox) << "\n";
 
+    auto ttf = [] (const NUC::Sub<double>& s) {
+        std::cout << "Sub: ";
+        std::cout << "Score = " << s.mScore;
+        std::cout << ", Layer = " << s.mLayer;
+        std::cout << ", Box = " << snowgoose::BoxUtils::toString(s.mBox) << "\n";
+    };
 
+    solver.getBag().traverse(ttf);
+    
     return 0;
 }
 
