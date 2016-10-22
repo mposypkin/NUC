@@ -34,8 +34,9 @@ namespace NUC {
             FT ub = mUBSupp.getBound(box);
             FT lb = mLBSupp.getBound(box);
             if (lb > ub - mEps) {
-                TotalCut<FT> *tc = new TotalCut <FT> (box);
-                std::shared_ptr< Cut<FT> > pc(tc);
+                // TotalCut<FT> *tc = new TotalCut <FT> (box);
+                // std::shared_ptr< Cut<FT> > pc(tc);
+                std::shared_ptr< Cut<FT> > pc = std::make_shared< TotalCut<FT> >(box);
                 v.push_back(pc);
             }
         }

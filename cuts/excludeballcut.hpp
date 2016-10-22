@@ -34,6 +34,17 @@ namespace NUC {
             }
         }
 
+        /**
+         * Forbid copy constructor (because of mC)
+         */
+        ExcludeBallCut(const ExcludeBallCut& ) = delete;
+        
+        /**
+         * Forbid assignment (because of mC)
+         */
+        ExcludeBallCut& operator = (const ExcludeBallCut& ) = delete;
+        
+        
         ~ExcludeBallCut() {
             delete[] mC;
         }
