@@ -9,11 +9,14 @@
 #define	BFSBAG_HPP
 
 #include <set>
-
+#include <vector>
+#include <algorithm>
 #include "sub.hpp"
 #include "subbag.hpp"
 
 namespace NUC {
+    
+
 
     /**
      * Best first search bag
@@ -28,6 +31,7 @@ namespace NUC {
                 return (s1.mScore < s2.mScore);
             }
         };
+        
 
         /**
          * Put a subproblem to the bag
@@ -65,7 +69,13 @@ namespace NUC {
         unsigned int size() const {
             return mSubs.size();
         }
-
+        
+        /**
+        * arrange collection of subs
+        */ 
+        void arrange(std::vector<Sub<FT>>& subs) const {
+            std::sort(subs.begin(), subs.end(), Cmp());
+        }
 
     private:
 

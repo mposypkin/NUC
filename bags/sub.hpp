@@ -29,7 +29,17 @@ namespace NUC {
          * @param score the subproblem's score
          * @param box the subproblem's box
          */
-        Sub(long long int layer, FT score, const snowgoose::Box<FT>& box) : mLayer(layer), mScore(score), mBox(box) {            
+        Sub(long long int layer, FT score, const snowgoose::Box<FT>& box) : mId(0), mLayer(layer), mScore(score), mBox(box) {            
+        }
+        
+        /**
+         * Constructor 
+         * @param subproblem's id
+         * @param layer number of the subproblem's layer
+         * @param score the subproblem's score
+         * @param box the subproblem's box
+         */
+        Sub(int id, long long int layer, FT score, const snowgoose::Box<FT>& box) : mId(id), mLayer(layer), mScore(score), mBox(box) {            
         }
         
         /**
@@ -43,9 +53,14 @@ namespace NUC {
         FT mScore;
         
         /**
+         * The subproblem's ID. 
+         */
+        int mId;
+        
+        /**
          * Subproblem's box
          */
-        const snowgoose::Box<FT> mBox;
+        /*const*/ snowgoose::Box<FT> mBox;
     };
 }
 
