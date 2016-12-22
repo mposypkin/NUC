@@ -10,7 +10,6 @@
 
 
 #include "basesolver.hpp"
-#include "treewatchsolver.hpp"
 
 bool stopper(const NUC::BaseSolver<double>& solver) {
     static int cnt = 0;
