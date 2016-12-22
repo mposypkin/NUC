@@ -49,11 +49,6 @@ namespace NUC {
              */
             virtual unsigned int size() const = 0;
             
-            /**
-             * arrange collection of subs
-             */ 
-            virtual void arrange(std::vector<Sub<FT>>& subs) const = 0;
-            
     };
 }
 

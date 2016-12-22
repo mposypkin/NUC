@@ -69,13 +69,6 @@ namespace NUC {
         unsigned int size() const {
             return mSubs.size();
         }
-        
-        /**
-        * arrange collection of subs
-        */ 
-        void arrange(std::vector<Sub<FT>>& subs) const {
-            std::sort(subs.begin(), subs.end(), Cmp());
-        }
 
     private:
 

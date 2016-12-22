@@ -18,17 +18,48 @@ namespace NUC {
     /**
      * Class for generation unique subproblem's id
      */
-    class IdGen
+class IdGen
+{
+public:
+    static IdGen& Instance()
     {
-       private:
-       static int curr_id;
+            static IdGen idGen;
+            return idGen;
+    }
+    int Id()
+    {
+       return curr_id++;
+    }
 
-       public: 
-       static int GetId()
-       {
-          return curr_id++;
-       }
-    };
+    IdGen(const IdGen& root) = delete;
+    IdGen& operator=(const IdGen&) = delete;
+
+private:        
+    IdGen() : curr_id(1) {};    
+    int curr_id;
+};
+
+class IdGenEnd
+{
+public:
+    static IdGenEnd& Instance()
+    {
+            static IdGenEnd idGen;
+            return idGen;
+    }
+    int Id()
+    {
+       return curr_id++;
+    }
+
+    IdGenEnd(const IdGenEnd& root) = delete;
+    IdGenEnd& operator=(const IdGenEnd&) = delete;
+
+private:        
+    IdGenEnd() : curr_id(1) {};    
+    int curr_id;
+};
+
 }
 
 #endif /* IDGEN_HPP */
