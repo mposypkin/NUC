@@ -43,7 +43,7 @@ namespace NUC {
         /**
          * Solve the problem
          */
-        void solve() {
+        virtual void solve() {
             while (mBag.size() && !mStopper(*this)) {
                 Sub<FT> sub = mBag.getSub();
                 std::vector<std::shared_ptr <NUC::Cut <double> > > cv;
@@ -97,7 +97,7 @@ namespace NUC {
             return mBag;
         }
         
-    private:
+    protected:
 
         void stepWatch(const Sub<FT>& sub, 
                 const std::vector<std::shared_ptr <NUC::Cut <double> > >& cutv,
