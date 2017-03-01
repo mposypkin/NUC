@@ -28,7 +28,7 @@ namespace NUC {
          * Constructor
          * @param rv initial record value
          */
-        RecordSupplier(FT rv) : mRv(rv) {
+        RecordSupplier(FT rv) : mRv(rv), mX(nullptr) {
         }
 
         /**
@@ -44,8 +44,21 @@ namespace NUC {
          * @param rv new record value
          */
         void updateRv(FT rv) {
-            if (rv < mRv)
+           if (rv < mRv)
                 mRv = rv;
+        }
+        
+        /**
+         * Update record value
+         * @param rv new record value
+         * @param x point for new record value
+         */
+        void updateRv(FT rv, FT * x) {
+            if (rv < mRv)
+            {
+                mRv = rv;
+                mX=x;
+            }
         }
 
         /**
@@ -56,9 +69,18 @@ namespace NUC {
         FT getBound(const snowgoose::Box<FT>& box) {
             return mRv;
         }
+        
+        /**
+         * Retrieve 
+         * @return record point
+         */
+        FT* getPoint() {
+            return mX;
+        }
 
     private:
         FT mRv;
+        FT *mX;
     };
 }
 
