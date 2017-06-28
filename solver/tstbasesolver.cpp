@@ -37,7 +37,7 @@ int main() {
 
     //Setup Cut Factory
     NUC::RecordSupplier<double> rs(std::numeric_limits<double>::max());
-    COMPI::Functor<double>* pf = mpp->mObjectives.at(0);
+    auto pf = mpp->mObjectives.at(0);
     NUC::LpzBoundSupplier<double> lplb(n, L, *pf);
     NUC::LBCutFactory<double> cf(eps, rs, lplb);
 
