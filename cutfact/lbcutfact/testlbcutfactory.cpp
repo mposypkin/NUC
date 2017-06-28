@@ -12,7 +12,7 @@ int main() {
     const double eps = 0.1;
     OPTITEST::DejongProblemFactory fact(n, -2, 4);
     COMPI::MPProblem<double> *mpp = fact.getProblem();
-    COMPI::Functor<double>* pf = mpp->mObjectives.at(0);
+    auto pf = mpp->mObjectives.at(0);
     NUC::RecordSupplier<double> rs(2);
     NUC::LpzBoundSupplier<double> lplb(n, L, *pf);
     NUC::LBCutFactory<double> cf(eps, rs, lplb);
