@@ -67,19 +67,18 @@ namespace NUC {
                         snowgoose::Box<FT> bx = boxv.back();
                         boxv.pop_back();
                         if (bx.mA[i] == mBox.mA[i]) {
-                            snowgoose::Box<FT> bxa(n);
-                            snowgoose::BoxUtils::copy(bx, bxa);
+                            snowgoose::Box<FT> bxa(bx);
                             bxa.mB[i] = bxa.mA[i];
                             nbx.push_back(bxa);
                         } 
                         if (bx.mB[i] == mBox.mB[i]) {
-                            snowgoose::Box<FT> bxb(n);
-                            snowgoose::BoxUtils::copy(bx, bxb);
+                            snowgoose::Box<FT> bxb(bx);
                             bxb.mA[i] = bxb.mB[i];
                             nbx.push_back(bxb);
                         }
                     }
-                    boxv = nbx;
+                    boxv = std::move(nbx);
+                    
                 } else {
 
                 }

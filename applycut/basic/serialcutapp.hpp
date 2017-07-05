@@ -27,7 +27,7 @@ namespace NUC {
         void applyCuts(const std::vector<std::shared_ptr <Cut <FT> > >& cutv, std::vector<snowgoose::Box<FT >> &boxv) {
             std::vector < snowgoose::Box < FT >> resbox;
             for (auto icut : cutv) {
-                auto ibox = boxv.begin();
+                typename std::vector < snowgoose::Box < FT >>::iterator ibox = boxv.begin();
                 for (; ibox != boxv.end();) {
                     if (icut->getType() == CutTypes::Total) {
                         if (snowgoose::BoxUtils::isSubBox(icut->getBox(), *ibox)) {
@@ -52,7 +52,8 @@ namespace NUC {
                     ibox++;
                 }
             }
-            boxv.insert(boxv.end(), resbox.begin(), resbox.end());
+            for (auto bb : resbox)
+                boxv.push_back(bb);
         }
 
     private:
