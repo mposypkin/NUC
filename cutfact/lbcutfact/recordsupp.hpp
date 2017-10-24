@@ -14,7 +14,9 @@
 #ifndef RECORDSUPP_HPP
 #define RECORDSUPP_HPP
 
+#include <cstring>
 #include "boundsupp.hpp"
+
 
 namespace NUC {
 
@@ -28,7 +30,14 @@ namespace NUC {
          * Constructor
          * @param rv initial record value
          */
-        RecordSupplier(FT rv) : mRv(rv), mX(nullptr) {
+        RecordSupplier(FT rv, size_t dim) : mRv(rv), mDim(dim) 
+        {
+            mX = new FT[dim];
+        }
+        
+        ~RecordSupplier()
+        {
+            delete[] mX;
         }
 
         /**
@@ -57,7 +66,7 @@ namespace NUC {
             if (rv < mRv)
             {
                 mRv = rv;
-                mX=x;
+                std::memcpy(mX, x, sizeof(FT) * mDim);
             }
         }
 
@@ -81,6 +90,7 @@ namespace NUC {
     private:
         FT mRv;
         FT *mX;
+        size_t mDim;
     };
 }
 
