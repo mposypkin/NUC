@@ -13,7 +13,7 @@ int main() {
     OPTITEST::DejongProblemFactory fact(n, -2, 4);
     COMPI::MPProblem<double> *mpp = fact.getProblem();
     auto pf = mpp->mObjectives.at(0);
-    NUC::RecordSupplier<double> rs(2);
+    NUC::RecordSupplier<double> rs(2, n);
     NUC::LpzBoundSupplier<double> lplb(n, L, *pf);
     NUC::LBCutFactory<double> cf(eps, rs, lplb);
     std::vector<std::shared_ptr <NUC::Cut <double> > > cv;
